@@ -111,7 +111,7 @@ function Index() {
           </div>
           <p className="mt-1 text-xs text-muted-foreground">以下是基于你的描述给出的建议，并非对性格或人生的绝对判断。</p>
           <div className="mt-6 space-y-5">
-            {SAMPLE[round].map((r, i) => (
+            {(SAMPLE[round] ?? []).map((r, i) => (
               <article key={r.name} className="animate-rise rounded-2xl border bg-card p-6" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <div className="flex items-baseline gap-3">
