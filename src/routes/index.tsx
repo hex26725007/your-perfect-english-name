@@ -109,7 +109,7 @@ function Index() {
         <section className="mt-12">
           <div className="flex items-end justify-between">
             <h2 className="font-display text-2xl font-semibold">为你推荐</h2>
-            <button onClick={() => generate(false)} disabled={loading} className="text-sm text-primary hover:underline">重新推荐</button>
+            <button onClick={() => generate(true)} disabled={loading} className="text-sm text-primary hover:underline">重新推荐</button>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">以下是基于你的描述给出的建议，并非对性格或人生的绝对判断。</p>
           <div className="mt-6 space-y-5">
