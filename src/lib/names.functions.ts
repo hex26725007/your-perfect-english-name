@@ -43,7 +43,7 @@ export const recommendNames = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data }): Promise<{ names: Rec[] } | { error: string }> => {
-    const apiKey = process.env.LOVABLE_API_KEY;
+    const apiKey = process.env['LOVABLE_API_KEY'];
     if (!apiKey) return { error: "服务未配置，请稍后再试。" };
 
     const user = `自我介绍：${data.intro}\n性别：${data.gender}\n场景：${data.scene}${
