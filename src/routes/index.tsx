@@ -96,7 +96,7 @@ function Index() {
           </div>
         </div>
         <button
-          onClick={generate}
+          onClick={() => generate(false)}
           disabled={loading}
           className="mt-6 w-full rounded-xl bg-primary py-3.5 font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
         >
@@ -104,15 +104,16 @@ function Index() {
         </button>
       </section>
 
-      {round !== null && (
+      {error && <p className="mt-6 text-center text-sm text-destructive">{error}</p>}
+      {results && (
         <section className="mt-12">
           <div className="flex items-end justify-between">
             <h2 className="font-display text-2xl font-semibold">为你推荐</h2>
-            <button onClick={generate} disabled={loading} className="text-sm text-primary hover:underline">重新推荐</button>
+            <button onClick={() => generate(false)} disabled={loading} className="text-sm text-primary hover:underline">重新推荐</button>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">以下是基于你的描述给出的建议，并非对性格或人生的绝对判断。</p>
           <div className="mt-6 space-y-5">
-            {(SAMPLE[round] ?? []).map((r, i) => (
+            {results.map((r, i) => (
               <article key={r.name} className="animate-rise rounded-2xl border bg-card p-6" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <div className="flex items-baseline gap-3">
