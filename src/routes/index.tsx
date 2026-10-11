@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { recommendNames, type Rec } from "@/lib/names.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,20 +17,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Rec = { name: string; cn: string; say: string; meaning: string; tags: string[]; why: string };
-
-const SAMPLE: Rec[][] = [
-  [
-    { name: "Iris", cn: "艾瑞斯", say: "AI-ris", meaning: "彩虹", tags: ["文艺", "安静", "有创造力"], why: "你喜欢摄影和设计，Iris 与色彩、视觉感受有关；它简洁自然，也适合在英国学习和生活时使用。" },
-    { name: "Clara", cn: "克拉拉", say: "CLA-ra", meaning: "明亮、清晰", tags: ["清醒", "有主见", "温和"], why: "你安静但有主见，Clara 传达出内敛而清晰的判断力；发音简单，英国同学很容易记住。" },
-    { name: "Ivy", cn: "艾薇", say: "AI-vee", meaning: "常春藤", tags: ["自然", "坚韧", "清新"], why: "“雨”让人联想到自然与生长，Ivy 安静却有韧性，和你沉稳的气质相呼应。" },
-  ],
-  [
-    { name: "Hazel", cn: "黑兹尔", say: "HAY-zel", meaning: "榛树", tags: ["温暖", "知性", "复古"], why: "Hazel 在英国很常见又不落俗套，带有书卷气，适合热爱艺术的你。" },
-    { name: "Nora", cn: "诺拉", say: "NOR-ra", meaning: "光", tags: ["简洁", "独立", "优雅"], why: "摄影即是关于光，Nora 短而有力，体现你独立安静的一面。" },
-    { name: "Elise", cn: "伊莉丝", say: "eh-LEES", meaning: "誓言", tags: ["细腻", "柔和", "坚定"], why: "Elise 柔和中带着坚定，与你“安静但有主见”的描述十分契合。" },
-  ],
-];
 
 function Chip({ active, children, onClick }: { active: boolean; children: React.ReactNode; onClick: () => void }) {
   return (
@@ -49,15 +37,28 @@ function Index() {
   const [gender, setGender] = useState("不限");
   const [scene, setScene] = useState("留学");
   const [loading, setLoading] = useState(false);
-  const [round, setRound] = useState<number | null>(null);
+  const [results, setResults] = useState<Rec[] | null>(null);
+  const [seen, setSeen] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const recommend = useServerFn(recommendNames);
 
-  const generate = () => {
+  const generate = async (again = false) => {
+    if (!text.trim()) { setError("先介绍一下你自己吧。"); return; }
     setLoading(true);
-    setTimeout(() => {
-      setRound((r) => (r === null ? 0 : (r + 1) % SAMPLE.length));
+    setError(null);
+    try {
+      const res = await recommend({ data: { intro: text, gender, scene, exclude: again ? seen : [] } });
+      if ("error" in res) setError(res.error);
+      else {
+        setResults(res.names);
+        setSeen((s) => [...(again ? s : []), ...res.names.map((n) => n.name)].slice(-30));
+      }
+    } catch {
+      setError("生成失败，请稍后再试。");
+    } finally {
       setLoading(false);
-    }, 900);
+    }
   };
 
   const copy = (r: Rec) => {
